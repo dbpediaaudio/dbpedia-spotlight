@@ -30,12 +30,21 @@ import java.io.File
 class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFilter {
 
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
-        if(whitelistedUris contains occ.resource.uri) {
-            Some(occ)
+
+      whitelistedUris.find(x => x.contains(occ.resource.uri)) match {
+        case Some(x) => {
+          val newOcc = occ
+          newOcc.resource.uri = x
+          Some(newOcc)
         }
-        else {
-            None
-        }
+        case _ => None
+      }
+        //if(whitelistedUris contains occ.resource.uri) {
+        //    Some(occ)
+        //}
+        //else {
+        //    None
+        //}
     }
 
 }
@@ -43,7 +52,7 @@ class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFi
 object UriWhitelistFilter {
     def fromFile(conceptURIsFileName: File) = {
         SpotlightLog.info(this.getClass, "Loading concept URIs from %s...", conceptURIsFileName)
-        val conceptUrisSet = Source.fromFile(conceptURIsFileName, "UTF-8").getLines.toSet
+        val conceptUrisSet = Source.fromFile(conceptURIsFileName, "UTF-8").getLines().toSet
         new UriWhitelistFilter(conceptUrisSet)
     }
 }

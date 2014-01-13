@@ -75,7 +75,7 @@ public class Server {
     //This is currently only used in the DB-based version.
     private static TextTokenizer tokenizer;
 
-    private static String namespacePrefix = SpotlightConfiguration.DEFAULT_NAMESPACE;
+    //private static String namespacePrefix = SpotlightConfiguration.DEFAULT_NAMESPACE;
 
     private static SparqlQueryExecuter sparqlExecuter = null;
 
@@ -212,13 +212,13 @@ public class Server {
         Server.tokenizer = tokenizer;
     }
 
-    public static String getPrefixedDBpediaURL(DBpediaResource resource) {
-        return namespacePrefix + resource.uri();
-    }
+    //public static String getPrefixedDBpediaURL(DBpediaResource resource) {
+    //    return namespacePrefix + resource.uri();
+    //}
 
-    public static void setNamespacePrefix(String namespacePrefix) {
-        Server.namespacePrefix = namespacePrefix;
-    }
+    //public static void setNamespacePrefix(String namespacePrefix) {
+    //    Server.namespacePrefix = namespacePrefix;
+    //}
 
     private static void setSparqlExecuter(String endpoint, String graph)
     {
@@ -275,7 +275,7 @@ public class Server {
         final SpotlightFactory factory  = new SpotlightFactory(configuration);
         setDisambiguators(factory.disambiguators());
         setSpotters(factory.spotters());
-        setNamespacePrefix(configuration.getDbpediaResource());
+        //setNamespacePrefix(configuration.getDbpediaResource());
         setSparqlExecuter(configuration.getSparqlEndpoint(), configuration.getSparqlMainGraph());
         setSimilarityThresholds(configuration.getSimilarityThresholds());
 
@@ -296,7 +296,7 @@ public class Server {
 
         SpotlightModel db = SpotlightModel.fromFolder(modelFolder);
 
-        setNamespacePrefix(db.properties().getProperty("namespace"));
+        //setNamespacePrefix(db.properties().getProperty("namespace"));
         setTokenizer(db.tokenizer());
         setSpotters(db.spotters());
         setDisambiguators(db.disambiguators());
