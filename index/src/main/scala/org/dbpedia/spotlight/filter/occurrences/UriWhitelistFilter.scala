@@ -27,24 +27,37 @@ import java.io.File
  *
  * @author maxjakob
  */
-class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFilter {
+class UriWhitelistFilter(var whitelistedUris : Set[String]) extends OccurrenceFilter {
+
+    var auxSet : scala.collection.mutable.Set[String] = scala.collection.mutable.Set()
+    var count = 1
 
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
 
-      whitelistedUris.find(x => x.contains(occ.resource.uri)) match {
+      whitelistedUris.find(x => x.endsWith("/" + occ.resource.uri)) match {
         case Some(x) => {
-          val newOcc = occ
-          newOcc.resource.uri = x
-          Some(newOcc)
+          //println(occ.resource.uri)
+          //println(occ.resource)
+          //println(whitelistedUris.size)
+          //System.exit(1)
+          occ.resource.uri = x
+          auxSet += x
+          if (count % 100 == 0) {
+            whitelistedUris = whitelistedUris.diff(auxSet)
+            auxSet = scala.collection.mutable.Set()
+          }
+          count += 1
+          Some(occ)
         }
         case _ => None
       }
-        //if(whitelistedUris contains occ.resource.uri) {
-        //    Some(occ)
-        //}
-        //else {
-        //    None
-        //}
+
+      //if(whitelistedUris contains (occ.resource.uri)) {
+      //    Some(occ)
+      //}
+      //else {
+      //    None
+      //}
     }
 
 }
