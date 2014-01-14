@@ -30,7 +30,10 @@ class DBpediaResource(var uri : String,
 
     require(uri != null)
 
-    uri = uri.replace(SpotlightConfiguration.DEFAULT_NAMESPACE, "")
+
+    val namespace = uri.replace(uri.split("/")(uri.split("/").size-1), "")
+
+    uri = uri.replace(namespace, "")
 
     uri = if (isEncoded(uri)) uri else WikiUtil.wikiEncode(uri)
 
@@ -97,7 +100,7 @@ class DBpediaResource(var uri : String,
         if (isExternalURI) {
             uri
         } else {
-            SpotlightConfiguration.DEFAULT_NAMESPACE + uri
+          namespace + uri
         }
     }
 
