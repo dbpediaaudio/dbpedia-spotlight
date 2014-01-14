@@ -30,8 +30,7 @@ class DBpediaResource(var uri : String,
 
     require(uri != null)
 
-
-    val namespace = uri.replace(uri.split("/")(uri.split("/").size-1), "")
+    var namespace = generateNamespace(uri)
 
     uri = uri.replace(namespace, "")
 
@@ -102,6 +101,26 @@ class DBpediaResource(var uri : String,
         } else {
           namespace + uri
         }
+    }
+
+    def generateNamespace(url: String): String = {
+      val urlArray = url.split("/")
+      if (urlArray.length == 1) {
+        ""
+      } else {
+        //println(url)
+        //println(url.reverse.split("/",2)(0).reverse)
+        //System.exit(1)
+        url.reverse.split("/",2)(0).reverse
+      }
+    }
+
+    def getNamespace = {
+      namespace
+    }
+
+    def setNamespace(newNamespace: String) {
+      namespace = newNamespace
     }
 
   // heuristic!!

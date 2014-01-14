@@ -29,35 +29,32 @@ import java.io.File
  */
 class UriWhitelistFilter(var whitelistedUris : Set[String]) extends OccurrenceFilter {
 
-    var auxSet : scala.collection.mutable.Set[String] = scala.collection.mutable.Set()
-    var count = 1
-
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
-
-      whitelistedUris.find(x => x.endsWith("/" + occ.resource.uri)) match {
-        case Some(x) => {
-          //println(occ.resource.uri)
-          //println(occ.resource)
-          //println(whitelistedUris.size)
+      if (occ.resource.namespace != "") {
+        if(whitelistedUris contains (occ.resource.namespace + '/' + occ.resource.uri)) {
+          occ.resource.uri = occ.resource.namespace + '/' + occ.resource.uri
+          // NUNCA ENTRA?
+          println("GLOBO CERTO " + occ.resource.uri)
+          System.exit(1)
+            Some(occ)
+        }
+        else {
+          // NUMEROS NA URI?
+          //println("GLOBO " + occ.resource.namespace + '/' + occ.resource.uri)
           //System.exit(1)
-          occ.resource.uri = x
-          auxSet += x
-          if (count % 100 == 0) {
-            whitelistedUris = whitelistedUris.diff(auxSet)
-            auxSet = scala.collection.mutable.Set()
-          }
-          count += 1
+            None
+        }
+      } else {
+        if(whitelistedUris contains "http://pt.dbpedia.org/resource/" + occ.resource.uri) {
+          occ.resource.uri = "http://pt.dbpedia.org/resource/" + occ.resource.uri
+          //println("DB CERTO " + occ.resource.uri)
+          //System.exit(1)
           Some(occ)
         }
-        case _ => None
+        else {
+          None
+        }
       }
-
-      //if(whitelistedUris contains (occ.resource.uri)) {
-      //    Some(occ)
-      //}
-      //else {
-      //    None
-      //}
     }
 
 }
