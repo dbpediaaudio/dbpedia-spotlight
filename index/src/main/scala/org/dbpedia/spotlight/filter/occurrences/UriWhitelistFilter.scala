@@ -20,6 +20,7 @@ import org.dbpedia.spotlight.model.DBpediaResourceOccurrence
 import io.Source
 import org.dbpedia.spotlight.log.SpotlightLog
 import java.io.File
+import scala.collection.mutable
 
 /**
  * Class that takes a whitelist of URIs to allow for indexing.
@@ -27,42 +28,31 @@ import java.io.File
  *
  * @author maxjakob
  */
-class UriWhitelistFilter(var whitelistedUris : Set[String]) extends OccurrenceFilter {
+//class UriWhitelistFilter(var whitelistedUris : Set[String]) extends OccurrenceFilter {
+class UriWhitelistFilter(var whitelistedUris : mutable.HashMap[String, String]) extends OccurrenceFilter {
 
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
-      if (occ.resource.namespace != "") {
-        if(whitelistedUris contains (occ.resource.namespace + '/' + occ.resource.uri)) {
-          occ.resource.uri = occ.resource.namespace + '/' + occ.resource.uri
-          // NUNCA ENTRA?
-          println("GLOBO CERTO " + occ.resource.uri)
-          System.exit(1)
-            Some(occ)
-        }
-        else {
-          // NUMEROS NA URI?
-          //println("GLOBO " + occ.resource.namespace + '/' + occ.resource.uri)
-          //System.exit(1)
-            None
-        }
+      val currentNamespace = whitelistedUris.getOrElse(occ.resource.uri, "")
+
+      if (currentNamespace != "") {
+        occ.resource.namespace = currentNamespace
+        Some(occ)
       } else {
-        if(whitelistedUris contains "http://pt.dbpedia.org/resource/" + occ.resource.uri) {
-          occ.resource.uri = "http://pt.dbpedia.org/resource/" + occ.resource.uri
-          //println("DB CERTO " + occ.resource.uri)
-          //System.exit(1)
-          Some(occ)
-        }
-        else {
-          None
-        }
+        None
       }
     }
-
 }
 
 object UriWhitelistFilter {
     def fromFile(conceptURIsFileName: File) = {
         SpotlightLog.info(this.getClass, "Loading concept URIs from %s...", conceptURIsFileName)
-        val conceptUrisSet = Source.fromFile(conceptURIsFileName, "UTF-8").getLines().toSet
-        new UriWhitelistFilter(conceptUrisSet)
+
+        val whiteListUrisHash = new mutable.HashMap[String, String]()
+        for (line <- Source.fromFile(conceptURIsFileName, "UTF-8").getLines()) {
+          val lineArray = line.reverse.split("/",2)
+          whiteListUrisHash += (lineArray(0).reverse -> lineArray(1).reverse)
+        }
+
+        new UriWhitelistFilter(whiteListUrisHash)
     }
 }

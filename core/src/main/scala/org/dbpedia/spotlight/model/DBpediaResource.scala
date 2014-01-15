@@ -30,9 +30,10 @@ class DBpediaResource(var uri : String,
 
     require(uri != null)
 
-    var namespace = generateNamespace(uri)
+    var namespace = ""
 
-    uri = uri.replace(namespace, "")
+    // Remove?
+    //uri = uri.replace(namespace, "")
 
     uri = if (isEncoded(uri)) uri else WikiUtil.wikiEncode(uri)
 
@@ -97,22 +98,10 @@ class DBpediaResource(var uri : String,
 
     def getFullUri = {
         if (isExternalURI) {
-            uri
+          uri
         } else {
           namespace + uri
         }
-    }
-
-    def generateNamespace(url: String): String = {
-      val urlArray = url.split("/")
-      if (urlArray.length == 1) {
-        ""
-      } else {
-        //println(url)
-        //println(url.reverse.split("/",2)(0).reverse)
-        //System.exit(1)
-        url.reverse.split("/",2)(0).reverse
-      }
     }
 
     def getNamespace = {
