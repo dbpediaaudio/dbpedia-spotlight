@@ -20,7 +20,6 @@ import org.dbpedia.spotlight.model.DBpediaResourceOccurrence
 import io.Source
 import org.dbpedia.spotlight.log.SpotlightLog
 import java.io.File
-import scala.collection.mutable
 
 /**
  * Class that takes a whitelist of URIs to allow for indexing.
@@ -28,31 +27,25 @@ import scala.collection.mutable
  *
  * @author maxjakob
  */
-//class UriWhitelistFilter(var whitelistedUris : Set[String]) extends OccurrenceFilter {
-class UriWhitelistFilter(var whitelistedUris : mutable.HashMap[String, String]) extends OccurrenceFilter {
+class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFilter {
 
-    def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
-      val currentNamespace = whitelistedUris.getOrElse(occ.resource.uri, "")
-
-      if (currentNamespace != "") {
-        occ.resource.namespace = currentNamespace
-        Some(occ)
-      } else {
-        None
-      }
+  def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
+    if(whitelistedUris contains occ.resource.uri) {
+      Some(occ)
     }
+    else {
+      println("Entrou no filtro white list e não achou a occ: " + occ.resource.uri)
+      System.exit(1)
+      None
+    }
+  }
+
 }
 
 object UriWhitelistFilter {
-    def fromFile(conceptURIsFileName: File) = {
-        SpotlightLog.info(this.getClass, "Loading concept URIs from %s...", conceptURIsFileName)
-
-        val whiteListUrisHash = new mutable.HashMap[String, String]()
-        for (line <- Source.fromFile(conceptURIsFileName, "UTF-8").getLines()) {
-          val lineArray = line.reverse.split("/",2)
-          whiteListUrisHash += (lineArray(0).reverse -> lineArray(1).reverse)
-        }
-
-        new UriWhitelistFilter(whiteListUrisHash)
-    }
+  def fromFile(conceptURIsFileName: File) = {
+    SpotlightLog.info(this.getClass, "Loading concept URIs from %s...", conceptURIsFileName)
+    val conceptUrisSet = Source.fromFile(conceptURIsFileName, "UTF-8").getLines.toSet
+    new UriWhitelistFilter(conceptUrisSet)
+  }
 }

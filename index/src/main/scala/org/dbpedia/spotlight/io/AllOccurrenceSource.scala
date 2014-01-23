@@ -22,8 +22,10 @@ import org.dbpedia.extraction.wikiparser._
 import org.dbpedia.extraction.sources.{Source, XMLSource}
 import org.dbpedia.spotlight.log.SpotlightLog
 import java.io.{File}
-import xml.{XML, Elem}
+import scala.xml.{XML, Elem}
 import org.dbpedia.extraction.util.Language
+import scala._
+import scala.Some
 
 /**
  * Loads Occurrences from a wiki dump.
@@ -35,6 +37,11 @@ object AllOccurrenceSource
 
     val splitParagraphsRegex = """(\n|(<br\s?/?>))(</?\w+?\s?/?>)?(\n|(<br\s?/?>))+"""
     val splitDisambiguationsRegex = """\n"""
+    var language = ""
+
+    def setLanguage(name: String) {
+      language = name
+    }
 
     //TODO Add fromInputStream requires that XMLSource from the DEF supports that. Currently only supports fromFile and fromXML
 
@@ -68,6 +75,7 @@ object AllOccurrenceSource
      */
     private class AllOccurrenceSource(wikiPages : Source, multiplyDisambigs : Int=MULTIPLY_DISAMBIGUATION_CONTEXT) extends OccurrenceSource
     {
+        val strHelper = new StringBuilder(SpotlightConfiguration.DEFAULT_NAMESPACE)
         val wikiParser = WikiParser()
 
         override def foreach[U](f : DBpediaResourceOccurrence => U) : Unit =
@@ -75,6 +83,7 @@ object AllOccurrenceSource
             var pageCount = 0
             var occCount = 0
 
+            println("Começou a processar páginas da Wikipedia")
             for (wikiPage <- wikiPages)
             {
                 var pageNode = wikiParser( wikiPage )
@@ -131,7 +140,7 @@ object AllOccurrenceSource
                     }
 
                     // Definition a.k.a. WikiPageContext
-                    val resource = new DBpediaResource(pageNode.title.encoded)
+                    val resource = if (language == "en" || language == "") new DBpediaResource(strHelper.toString() + pageNode.title.encoded) else new DBpediaResource(strHelper.insert(7, language).toString() + """.""" + pageNode.title.encoded)
                     val surfaceForm = new SurfaceForm(pageNode.title.decoded.replaceAll(""" \(.+?\)$""", "")
                                                                             .replaceAll("""^(The|A) """, ""))
                     val pageContext = new Text( WikiPageContextSource.getPageText(pageNode) )

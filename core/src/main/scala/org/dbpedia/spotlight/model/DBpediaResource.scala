@@ -30,12 +30,8 @@ class DBpediaResource(var uri : String,
 
     require(uri != null)
 
-    var namespace = ""
-
-    // Remove?
-    //uri = uri.replace(namespace, "")
-
-    uri = if (isEncoded(uri)) uri else WikiUtil.wikiEncode(uri)
+    println("Criando este DBpediaResouce: " + uri)
+    //uri = if (isEncoded(uri)) uri else WikiUtil.wikiEncode(uri)
 
     def this(uri : String) = {
         this(uri, 0, 0.0, List[OntologyType]())
@@ -97,19 +93,11 @@ class DBpediaResource(var uri : String,
     }
 
     def getFullUri = {
-        if (isExternalURI) {
-          uri
-        } else {
-          namespace + uri
-        }
-    }
-
-    def getNamespace = {
-      namespace
-    }
-
-    def setNamespace(newNamespace: String) {
-      namespace = newNamespace
+      if (isExternalURI) {
+        uri
+      } else {
+        SpotlightConfiguration.DEFAULT_NAMESPACE + uri
+      }
     }
 
   // heuristic!!

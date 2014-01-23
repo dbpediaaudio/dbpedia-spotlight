@@ -71,10 +71,12 @@ object ExtractOccsFromWikipedia {
 
         val filters = (conceptUriFilter :: redirectResolver :: contextNarrowFilter :: Nil)
 
+        AllOccurrenceSource.setLanguage(config.get("org.dbpedia.spotlight.language_i18n_code"))
         val occSource : Traversable[DBpediaResourceOccurrence] = AllOccurrenceSource.fromXMLDumpFile(new File(wikiDumpFileName), Language(languageCode))
         //val filter = new OccurrenceFilter(redirectsTC = redirectsTCMap, conceptURIs = conceptUrisSet, contextExtractor = narrowContext)
         //val occs = filter.filter(occSource)
 
+        println("Vai entrar na aplicação dos filtros")
         val occs = filters.foldLeft(occSource){ (o,f) => f.filterOccs(o) }
 
         FileOccurrenceSource.writeToFile(occs, new File(targetFileName))
