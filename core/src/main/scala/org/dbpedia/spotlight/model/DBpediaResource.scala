@@ -30,7 +30,7 @@ class DBpediaResource(var uri : String,
 
     require(uri != null)
 
-    println("Criando este DBpediaResouce: " + uri)
+    uri = SpotlightConfiguration.DEFAULT_NAMESPACE + uri
     //uri = if (isEncoded(uri)) uri else WikiUtil.wikiEncode(uri)
 
     def this(uri : String) = {

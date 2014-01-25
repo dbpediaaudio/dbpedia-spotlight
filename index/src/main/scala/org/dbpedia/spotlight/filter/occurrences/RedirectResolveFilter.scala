@@ -25,7 +25,6 @@ import org.dbpedia.spotlight.log.SpotlightLog
 class RedirectResolveFilter(val redirects : Map[String,String]) extends OccurrenceFilter {
 
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
-        println(redirects.get("Teste de resource no filtro redirect = " + occ.resource.uri))
         redirects.get(occ.resource.uri) match {
             case Some(targetUri) => {
                 val resolvedResource = new DBpediaResource(targetUri, occ.resource.support, occ.resource.prior, occ.resource.types)

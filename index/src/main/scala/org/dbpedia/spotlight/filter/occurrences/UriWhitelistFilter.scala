@@ -34,8 +34,6 @@ class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFi
       Some(occ)
     }
     else {
-      println("Entrou no filtro white list e não achou a occ: " + occ.resource.uri)
-      System.exit(1)
       None
     }
   }

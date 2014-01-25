@@ -26,7 +26,6 @@ class ContextNarrowFilter(val contextExtractor : ContextExtractor) extends Occur
 
     def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
         try {
-          println("Teste de resource no filtro narrow = " + occ.resource.uri)
             Some(contextExtractor.narrowContext(occ))
         }
         catch {
