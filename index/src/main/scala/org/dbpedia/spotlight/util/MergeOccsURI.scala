@@ -48,7 +48,7 @@ object MergeOccsURI {
 
 
   def getURI(map: Map[String, String], uri: String): String = {
-    map.getOrElse(uri, uri)
+    map.getOrElse(uri.trim(), uri.trim())
   }
 
   def writeToFile(p: String, s: String) {
