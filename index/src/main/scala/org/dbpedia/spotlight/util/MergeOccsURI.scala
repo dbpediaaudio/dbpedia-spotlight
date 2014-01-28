@@ -1,29 +1,8 @@
 package org.dbpedia.spotlight.util
 
 import scala.io.Source
-import java.io.{FileWriter, File}
+import java.io.FileWriter
 
-class OCCS {
-
-  var surfaceForm: String = ""
-  var uri: String = ""
-  var label: String = ""
-  var context: String = ""
-  var count: Int = 0
-
-
-  def this(surfaceForm: String, uri: String, label: String, context: String, count: Int) = {
-    this();
-
-    this.surfaceForm = surfaceForm
-    this.uri = uri
-    this.label = label
-    this.context = context
-    this.count = count
-  }
-
-
-}
 
 object MergeOccsURI {
 
