@@ -30,7 +30,9 @@ class DBpediaResource(var uri : String,
 
     require(uri != null)
 
-    uri = SpotlightConfiguration.DEFAULT_NAMESPACE + uri
+    if (!uri.contains("/")) {
+      uri = SpotlightConfiguration.DEFAULT_NAMESPACE + uri
+    }
     //uri = if (isEncoded(uri)) uri else WikiUtil.wikiEncode(uri)
 
     def this(uri : String) = {
