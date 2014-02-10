@@ -78,9 +78,9 @@ class CrossLanguage {
   }
 
 
-  def updateSurfaceForms(aResourcesFile: String) {
+  def updateSurfaceForms(aResourcesFile: String, outputDir: String) {
     println("Updating the surface forms...")
-    val updaterStream = new PrintStream("E:/CrossLanguage/output/pt/final_map.nt", "UTF-8")
+    val updaterStream = new PrintStream(outputDir + "final_map.nt", "UTF-8")
 
     var i = 1
     for (line <- Source.fromFile(aResourcesFile).getLines()) {
@@ -103,9 +103,9 @@ class CrossLanguage {
     println("Done.")
   }
 
-  def extractLabels(sfMapFile: String, labelsFile: String) {
+  def extractLabels(sfMapFile: String, labelsFile: String, outputDir: String) {
     println("Extracting labels...")
-    val labelStream = new PrintStream("E:/CrossLanguage/output/pt/labels_map.list", "UTF-8")
+    val labelStream = new PrintStream(outputDir + "labels_map.list", "UTF-8")
 
     if (!labelsMap.isEmpty) labelsMap = new mutable.HashMap[String, String]
 
@@ -178,20 +178,21 @@ object CrossLanguage {
     val enOccs = config.get("org.dbpedia.spotlight.data.enOccs")
     val ptOccs = config.get("org.dbpedia.spotlight.data.ptOccs")
     val labelsFile = config.get("org.dbpedia.spotlight.data.labels")
+    val outputDir = config.get("org.dbpedia.spotlight.data.outputBaseDir")
 
     val crossLanguage = new CrossLanguage
     // Fills a map with all the resources from a desired language
-    //crossLanguage.fillResourceMap(interlanguagePtFileName, "pt", "en", true)
+    crossLanguage.fillResourceMap(interlanguagePtFileName, "pt", "en", inverse = true)
     // Uses the resource map to filter an occs.tsv file for all the pages with those resources. This
     // also gets all the resources from these pages
-    //crossLanguage.filterOccs(enOccs, filteredResources)
+    crossLanguage.filterOccs(enOccs, filteredResources)
     // Fills a map with all the resources from a desired language
-    //crossLanguage.fillResourceMap(interlanguageEnFileName, "en", "pt", false)
-    // Updates the source language surface forms with the target language ones
-    //crossLanguage.updateSurfaceForms(filteredResources)
-
-    //crossLanguage.extractLabels("E:/CrossLanguage/output/pt/final_map.nt", labelsFile)
-
-    //crossLanguage.complementContext(ptOccs, "E:/CrossLanguage/output/pt/labels_map.list")
+    crossLanguage.fillResourceMap(interlanguageEnFileName, "en", "pt", inverse = false)
+    // Updates the map with the source language surface forms with the target language ones
+    crossLanguage.updateSurfaceForms(filteredResources, outputDir)
+    // Gets all the labels related to these surface forms
+    crossLanguage.extractLabels(outputDir + "final_map.nt", labelsFile, outputDir)
+    // Adds the labels in the respective contexts
+    crossLanguage.complementContext(ptOccs, outputDir + "labels_map.list")
   }
 }

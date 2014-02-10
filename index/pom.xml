@@ -121,6 +121,16 @@
                             </args-->
                         </launcher>
                         <launcher>
+                            <id>CrossLanguage</id>
+                            <mainClass>org.dbpedia.spotlight.util.CrossLanguage</mainClass>
+                            <jvmArgs>
+                                <jvmArg>-Xmx${javaOpts.Xmx}</jvmArg>
+                            </jvmArgs>
+                            <!--args>
+                                <arg>../conf/indexing-3.8.properties</arg>
+                            </args-->
+                        </launcher>
+                        <launcher>
                             <id>CompressIndex</id>
                             <mainClass>org.dbpedia.spotlight.lucene.index.CompressIndex</mainClass>
                             <jvmArgs>
