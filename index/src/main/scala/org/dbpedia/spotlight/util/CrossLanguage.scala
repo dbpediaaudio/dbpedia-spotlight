@@ -29,7 +29,8 @@ class CrossLanguage {
 
   def fillResourceMap(aSameAsFile: String, sourceLanguage: String, targetLanguage: String, inverse: Boolean) {
     println("Filling the resource set...")
-    val resourceStream = new PrintStream("E:/CrossLanguage/output/" + targetLanguage + "/" + sourceLanguage + "_links.list", "UTF-8")
+    //val resourceStream = new PrintStream("E:/CrossLanguage/output/" + targetLanguage + "/" + sourceLanguage + "_links.list", "UTF-8")
+    val resourceStream = new PrintStream("/mnt/CrossLanguage/output/" + targetLanguage + "/" + sourceLanguage + "_links.list", "UTF-8")
     val languagePrefix = getLanguagePrefix(targetLanguage)
 
     if (!resourceMap.isEmpty) resourceMap = new mutable.HashMap[String, String]
