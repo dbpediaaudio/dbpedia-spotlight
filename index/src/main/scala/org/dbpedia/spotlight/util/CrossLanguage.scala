@@ -148,7 +148,7 @@ class CrossLanguage {
       tmpLabelsMap += (lineArray(0) -> lineArray(1))
     }
 
-    val occsStream = new PrintStream("E:/CrossLanguage/output/pt/final_occs.tsv", "UTF-8")
+    val occsStream = new PrintStream("/mnt/CrossLanguage/output/pt/final_occs.tsv", "UTF-8")
     for (line <- Source.fromFile(anOccsFile).getLines()) {
       try {
         val lineArray = line.split("\t")
