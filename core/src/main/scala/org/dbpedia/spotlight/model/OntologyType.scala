@@ -62,7 +62,7 @@ class DBpediaType(var name : String) extends OntologyType {
 
     name = name.replace("DBpedia:","")
 
-    name = name.capitalize
+    if (!name.startsWith("http")) name = name.capitalize
 
     name = name.replaceAll(" ([a-zA-Z])", "$1".toUpperCase).trim
 
@@ -71,7 +71,12 @@ class DBpediaType(var name : String) extends OntologyType {
     }
 
     override def getFullUri =  if (name.substring(0,4).equalsIgnoreCase("http")) name else DBpediaType.DBPEDIA_ONTOLOGY_PREFIX + name
-    override def typeID = if (name.substring(0,4).equalsIgnoreCase("http")) name else "DBpedia:".concat(name)
+    override def typeID = if (name.length >= 4) {
+      if (name.substring(0,4).equalsIgnoreCase("http")) name
+      else "DBpedia:".concat(name)
+    } else {
+      "DBpedia:".concat(name)
+    }
 
 }
 

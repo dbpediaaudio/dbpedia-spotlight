@@ -46,6 +46,8 @@ object ExtractOccsFromWikipedia {
     def main(args : Array[String]) {
         val indexingConfigFileName = args(0)
         val targetFileName = args(1)
+        var mergeWithOtherOntology = false
+        if (args.length == 3) mergeWithOtherOntology = args(2).toBoolean
 
         val config = new IndexingConfiguration(indexingConfigFileName)
         var wikiDumpFileName    = config.get("org.dbpedia.spotlight.data.wikipediaDump")
@@ -75,7 +77,7 @@ object ExtractOccsFromWikipedia {
 
         val filters = (conceptUriFilter :: redirectResolver :: contextNarrowFilter :: Nil)
 
-        val occSource : Traversable[DBpediaResourceOccurrence] = AllOccurrenceSource.fromXMLDumpFile(new File(wikiDumpFileName), Language(languageCode))
+        val occSource : Traversable[DBpediaResourceOccurrence] = AllOccurrenceSource.fromXMLDumpFile(new File(wikiDumpFileName), Language(languageCode), true, config)
         //val filter = new OccurrenceFilter(redirectsTC = redirectsTCMap, conceptURIs = conceptUrisSet, contextExtractor = narrowContext)
         //val occs = filter.filter(occSource)
 

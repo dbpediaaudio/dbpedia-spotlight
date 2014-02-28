@@ -85,7 +85,9 @@ object TypesLoader
         val parser = new NxParser(instanceTypesStream)
         while (parser.hasNext) {
             val triple = parser.next
+
             if(!triple(2).toString.endsWith("owl#Thing")) {
+
                 i = i + 1;
                 val resource = new DBpediaResource(triple(0).toString)
                 val t = Factory.OntologyType.fromURI(triple(2).toString)

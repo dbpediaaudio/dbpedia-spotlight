@@ -175,6 +175,7 @@ object ExtractCandidateMap
         if ("""^[\W\d]+$""".r.findFirstIn(surfaceForm) != None) {
             return false
         }
+
         // not an escaped char. see http://sourceforge.net/mailarchive/message.php?msg_id=28908255
         if ("""\\\w""".r.findFirstIn(surfaceForm) != None) {
             return false
@@ -289,7 +290,7 @@ object ExtractCandidateMap
                 }
                 // get all redirects and disambiguations that link to the last URI
                 // take care that there are no loops
-                var linksList = linkMap.get(linkedUris.head).getOrElse(List[String]()).filterNot(cyclePrevention contains _)
+                val linksList = linkMap.get(linkedUris.head).getOrElse(List[String]()).filterNot(cyclePrevention contains _)
 
                 // add links that point here
                 linkedUris = linkedUris.tail ::: linksList
@@ -301,7 +302,7 @@ object ExtractCandidateMap
             }
         }
 
-        surfaceFormsStream.close
+        surfaceFormsStream.close()
         SpotlightLog.info(this.getClass, "Done.")
 //        surfaceFormsFileName = surfaceFormsFile.getAbsolutePath
 //        IndexConfiguration.set("surfaceForms", surfaceFormsFileName)
@@ -309,8 +310,15 @@ object ExtractCandidateMap
 
     // Returns a cleaned surface form if it is considered to be worth keeping
     def getCleanSurfaceForm(surfaceForm : String, stopWords : Set[String], lowerCased : Boolean=false) : Option[String] = {
-        val cleanedSurfaceForm = Factory.SurfaceForm.fromWikiPageTitle(surfaceForm, lowerCased).name
-        if (isGoodSurfaceForm(cleanedSurfaceForm, stopWords)) Some(cleanedSurfaceForm) else None
+        var cleanedSurfaceForm = ""
+      //println(surfaceForm)
+        if (surfaceForm contains "dbpedia.org/resource") {
+          cleanedSurfaceForm = Factory.SurfaceForm.fromWikiPageTitle(surfaceForm, lowerCased).name
+          if (isGoodSurfaceForm(cleanedSurfaceForm, stopWords)) Some(cleanedSurfaceForm) else None
+        } else {
+          cleanedSurfaceForm = Factory.SurfaceForm.fromOtherResourceURI(surfaceForm, lowerCased).name
+          Some(cleanedSurfaceForm)
+        }
     }
 
     // map from URI to list of surface forms
@@ -321,7 +329,7 @@ object ExtractCandidateMap
         val separator = "\t"
 
         val tsvScanner = new Scanner(new FileInputStream(surrogatesFile), "UTF-8")
-        for(line <- Source.fromFile(surrogatesFile, "UTF-8").getLines) {
+        for(line <- Source.fromFile(surrogatesFile, "UTF-8").getLines()) {
             val el = tsvScanner.nextLine.split(separator)
             val sf = if (lowerCased) new SurfaceForm(el(0).toLowerCase) else new SurfaceForm(el(0))
             val uri = el(1)
@@ -408,10 +416,10 @@ object ExtractCandidateMap
         val stopWords = Source.fromFile(stopWordsFileName, "UTF-8").getLines.toSet
 
         // get concept URIs
-        saveConceptURIs
+        //saveConceptURIs
 
         // get redirects
-        saveRedirectsTransitiveClosure
+        //saveRedirectsTransitiveClosure
 
         // get "clean" surface forms, i.e. the ones obtained from TRDs
         saveSurfaceForms(stopWords)

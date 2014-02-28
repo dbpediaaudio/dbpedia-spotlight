@@ -101,8 +101,10 @@ object IndexLingPipeSpotter
         val dictionary = new MapDictionary[String]()
         for (line <- Source.fromFile(surrogatesTSVFile, "UTF-8").getLines) {
             val fields = line.split("\t")
-            val surfaceForm = fields(0)
-            dictionary.addEntry(new DictionaryEntry[String](surfaceForm, ""))  // chunk type undefined
+            if (fields.length >= 2) {
+                val surfaceForm = fields(0)
+                dictionary.addEntry(new DictionaryEntry[String](surfaceForm, ""))  // chunk type undefined
+            }
         }
         dictionary
     }

@@ -26,6 +26,9 @@ import scala.xml.{XML, Elem}
 import org.dbpedia.extraction.util.Language
 import scala._
 import scala.Some
+import org.dbpedia.spotlight.util.IndexingConfiguration
+import scala.collection.mutable
+import org.dbpedia.spotlight.util.MergeOccsURI
 
 /**
  * Loads Occurrences from a wiki dump.
@@ -38,14 +41,19 @@ object AllOccurrenceSource
     val splitParagraphsRegex = """(\n|(<br\s?/?>))(</?\w+?\s?/?>)?(\n|(<br\s?/?>))+"""
     val splitDisambiguationsRegex = """\n"""
 
+    var relationHash = new mutable.HashMap[String, String]()
+
     //TODO Add fromInputStream requires that XMLSource from the DEF supports that. Currently only supports fromFile and fromXML
 
     /**
      * Creates an DBpediaResourceOccurrence Source from a dump file.
      */
-    def fromXMLDumpFile(dumpFile : File, language: Language) : OccurrenceSource =
+    def fromXMLDumpFile(dumpFile : File, language: Language, usingOtherOntology: Boolean, config: IndexingConfiguration) : OccurrenceSource =
     {
-        new AllOccurrenceSource(XMLSource.fromFile(dumpFile, language, _.namespace == Namespace.Main))
+        if (usingOtherOntology) {
+          relationHash = MergeOccsURI.generateRelationHash(config)
+        }
+        new AllOccurrenceSource(XMLSource.fromFile(dumpFile, language, _.namespace == Namespace.Main), usingOtherOntology)
     }
 
     /**
@@ -53,7 +61,7 @@ object AllOccurrenceSource
      */
     def fromXML(xml : Elem, language: Language) : OccurrenceSource  =
     {
-        new AllOccurrenceSource(XMLSource.fromXML(xml, language))
+        new AllOccurrenceSource(XMLSource.fromXML(xml, language), false)
     }
 
     /**
@@ -62,13 +70,13 @@ object AllOccurrenceSource
     def fromXML(xmlString : String, language: Language) : OccurrenceSource  =
     {
         val xml : Elem = XML.loadString("<dummy>" + xmlString + "</dummy>")  // dummy necessary: when a string "<page><b>text</b></page>" is given, <page> is the root tag and can't be found with the command  xml \ "page"
-        new AllOccurrenceSource(XMLSource.fromXML(xml, language))
+        new AllOccurrenceSource(XMLSource.fromXML(xml, language), false)
     }
 
     /**
      * DBpediaResourceOccurrence Source which reads from a wiki pages source.
      */
-    private class AllOccurrenceSource(wikiPages : Source, multiplyDisambigs : Int=MULTIPLY_DISAMBIGUATION_CONTEXT) extends OccurrenceSource
+    private class AllOccurrenceSource(wikiPages : Source, usingOtherOntology : Boolean, multiplyDisambigs : Int=MULTIPLY_DISAMBIGUATION_CONTEXT) extends OccurrenceSource
     {
         val wikiParser = WikiParser()
 
@@ -134,6 +142,10 @@ object AllOccurrenceSource
 
                     // Definition a.k.a. WikiPageContext
                     val resource = new DBpediaResource(pageNode.title.encoded)
+                    if(usingOtherOntology) {
+                      val newUri = relationHash.getOrElse(resource.uri, "")
+                      if (newUri != "") resource.setUri(newUri)
+                    }
                     val surfaceForm = new SurfaceForm(pageNode.title.decoded.replaceAll(""" \(.+?\)$""", "")
                                                                             .replaceAll("""^(The|A) """, ""))
                     val pageContext = new Text( WikiPageContextSource.getPageText(pageNode) )
@@ -143,7 +155,7 @@ object AllOccurrenceSource
                 }
 
                 pageCount += 1
-                if (pageCount %100000 == 0) {
+                if (pageCount % 100000 == 0) {
                     SpotlightLog.info(this.getClass, "Processed %d Wikipedia definition pages (average %.2f links per page)", pageCount, occCount/pageCount.toDouble)
                 }
             }

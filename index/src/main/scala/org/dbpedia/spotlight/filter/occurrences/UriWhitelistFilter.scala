@@ -30,10 +30,15 @@ import java.io.File
 class UriWhitelistFilter(val whitelistedUris : Set[String]) extends OccurrenceFilter {
 
   def touchOcc(occ : DBpediaResourceOccurrence) : Option[DBpediaResourceOccurrence] = {
+    if (occ.resource.uri == "http://semantica.globo.com/base/Pais_reino-unido") println("Chegou na URI http://semantica.globo.com/base/Pais_reino-unido")
     if(whitelistedUris contains occ.resource.uri) {
+      //println("oi")
+      //System.exit(1)
+      if (occ.resource.uri == "http://semantica.globo.com/base/Pais_reino-unido") println("Ela está no conceptURIs!")
       Some(occ)
     }
     else {
+      if (occ.resource.uri == "http://semantica.globo.com/base/Pais_reino-unido") println("Não está no conceptURIs! o que é correto!")
       None
     }
   }

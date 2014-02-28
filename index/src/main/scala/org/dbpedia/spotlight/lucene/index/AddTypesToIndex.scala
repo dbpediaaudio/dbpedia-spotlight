@@ -42,8 +42,11 @@ object AddTypesToIndex {
 
     def main(args : Array[String]) {
 
-        val indexingConfigFileName = args(0)
-        val sourceIndexFileName = args(1)
+        //val indexingConfigFileName = args(0)
+        //val sourceIndexFileName = args(1)
+
+      val indexingConfigFileName = "E:/DBpedia-Namespaces/dbpedia-spotlight/conf/indexing.properties"
+      val sourceIndexFileName = "E:/NamespacesData/index"
 
         val config = new IndexingConfiguration(indexingConfigFileName)
         val targetIndexFileName = sourceIndexFileName+"-withTypes"
