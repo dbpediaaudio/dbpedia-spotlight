@@ -314,11 +314,10 @@ object ExtractCandidateMap
       //println(surfaceForm)
         if (surfaceForm contains "dbpedia.org/resource") {
           cleanedSurfaceForm = Factory.SurfaceForm.fromWikiPageTitle(surfaceForm, lowerCased).name
-          if (isGoodSurfaceForm(cleanedSurfaceForm, stopWords)) Some(cleanedSurfaceForm) else None
         } else {
           cleanedSurfaceForm = Factory.SurfaceForm.fromOtherResourceURI(surfaceForm, lowerCased).name
-          Some(cleanedSurfaceForm)
         }
+        if (isGoodSurfaceForm(cleanedSurfaceForm, stopWords)) Some(cleanedSurfaceForm) else None
     }
 
     // map from URI to list of surface forms

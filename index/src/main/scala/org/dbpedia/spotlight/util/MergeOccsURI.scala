@@ -1,7 +1,7 @@
 package org.dbpedia.spotlight.util
 
 import scala.io.Source
-import java.io.FileWriter
+import java.io.{PrintStream, FileWriter}
 import org.dbpedia.spotlight.model.{SpotlightConfiguration, SurfaceForm, DBpediaResourceOccurrence}
 import scala.collection.mutable
 
@@ -96,10 +96,46 @@ object MergeOccsURI {
   }
 
   def writeToFile(p: String, s: String) {
-    val fw = new FileWriter(p, true);
-    fw.write(s);
+    val fw = new FileWriter(p, true)
+    fw.write(s)
     fw.close()
 
   }
 
+  def main(args : Array[String]) {
+
+    println("Creating a hash with the relation file to some Ontology...")
+    val relationHash = new mutable.HashMap[String, String]()
+    for (line <- Source.fromFile("E:/globo_resources/labels_pt.nt").getLines()) {
+      val lineArray = line.split(">")
+      try {
+        val currentKey = lineArray(0).reverse.dropRight(1).reverse.split('/').last
+        val currentValue = lineArray(2).dropRight(6).reverse.dropRight(2).reverse
+        //println(currentKey)
+        //println(currentValue)
+        relationHash.put(currentKey, currentValue)
+      } catch {
+        case e: Exception => println("Skipping invalid line!")
+      }
+    }
+    println("Done.")
+
+    println("Replacing surface forms.")
+    val sfStream = new PrintStream("E:/NamespacesData/output/pt/newSurfaceForms.tsv", "UTF-8")
+    var i = 1
+    for (line <- Source.fromFile("E:/NamespacesData/output/pt/surfaceForms-fromTitRedDis.tsv").getLines()) {
+      val lineArray = line.split('\t')
+      val newSF = relationHash.getOrElse(lineArray(0),"")
+      if (!newSF.isEmpty) {
+        if (newSF.length <= 50) {
+          sfStream.println(newSF.replaceAll("_","") + '\t' + lineArray(1))
+        }
+      } else {
+        sfStream.println(line)
+      }
+      if (i % 100000 == 0) println (i + " lines processed...")
+      i += 1
+    }
+    println("Done.")
+  }
 }

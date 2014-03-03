@@ -144,7 +144,7 @@ object AllOccurrenceSource
                     val resource = new DBpediaResource(pageNode.title.encoded)
                     if(usingOtherOntology) {
                       val newUri = relationHash.getOrElse(resource.uri, "")
-                      if (newUri != "") resource.setUri(newUri)
+                      if (!newUri.isEmpty) resource.setUri(newUri)
                     }
                     val surfaceForm = new SurfaceForm(pageNode.title.decoded.replaceAll(""" \(.+?\)$""", "")
                                                                             .replaceAll("""^(The|A) """, ""))
