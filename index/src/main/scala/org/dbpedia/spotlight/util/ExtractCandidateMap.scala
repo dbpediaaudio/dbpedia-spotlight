@@ -311,7 +311,7 @@ object ExtractCandidateMap
     // Returns a cleaned surface form if it is considered to be worth keeping
     def getCleanSurfaceForm(surfaceForm : String, stopWords : Set[String], lowerCased : Boolean=false) : Option[String] = {
         var cleanedSurfaceForm = ""
-      //println(surfaceForm)
+        //println(surfaceForm)
         if (surfaceForm contains "dbpedia.org/resource") {
           cleanedSurfaceForm = Factory.SurfaceForm.fromWikiPageTitle(surfaceForm, lowerCased).name
         } else {
@@ -415,10 +415,10 @@ object ExtractCandidateMap
         val stopWords = Source.fromFile(stopWordsFileName, "UTF-8").getLines.toSet
 
         // get concept URIs
-        //saveConceptURIs
+        saveConceptURIs
 
         // get redirects
-        //saveRedirectsTransitiveClosure
+        saveRedirectsTransitiveClosure
 
         // get "clean" surface forms, i.e. the ones obtained from TRDs
         saveSurfaceForms(stopWords)

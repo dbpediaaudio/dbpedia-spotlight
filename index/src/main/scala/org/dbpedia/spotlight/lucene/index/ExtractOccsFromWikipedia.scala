@@ -21,7 +21,7 @@ package org.dbpedia.spotlight.lucene.index
 import java.io.File
 import org.dbpedia.spotlight.log.SpotlightLog
 import org.dbpedia.spotlight.string.ContextExtractor
-import org.dbpedia.spotlight.util.IndexingConfiguration
+import org.dbpedia.spotlight.util.{MergeOccsURI, IndexingConfiguration}
 import org.dbpedia.spotlight.filter.occurrences.{RedirectResolveFilter, UriWhitelistFilter, ContextNarrowFilter}
 import org.dbpedia.spotlight.io._
 import org.dbpedia.spotlight.model.{SpotlightConfiguration, DBpediaResourceOccurrence}
@@ -77,7 +77,7 @@ object ExtractOccsFromWikipedia {
 
         val filters = (conceptUriFilter :: redirectResolver :: contextNarrowFilter :: Nil)
 
-        val occSource : Traversable[DBpediaResourceOccurrence] = AllOccurrenceSource.fromXMLDumpFile(new File(wikiDumpFileName), Language(languageCode), true, config)
+        val occSource : Traversable[DBpediaResourceOccurrence] = AllOccurrenceSource.fromXMLDumpFile(new File(wikiDumpFileName), Language(languageCode), false, config)
         //val filter = new OccurrenceFilter(redirectsTC = redirectsTCMap, conceptURIs = conceptUrisSet, contextExtractor = narrowContext)
         //val occs = filter.filter(occSource)
 
@@ -86,6 +86,8 @@ object ExtractOccsFromWikipedia {
         FileOccurrenceSource.writeToFile(occs, new File(targetFileName))
 
         SpotlightLog.info(this.getClass, "Occurrences saved to: %s", targetFileName)
+
+        MergeOccsURI.mergeUsingOccs(config.get("org.dbpedia.spotlight.data.mapToOtherOntology"), targetFileName, targetFileName + ".FINAL")
 
     }
 }

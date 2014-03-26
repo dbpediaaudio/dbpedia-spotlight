@@ -125,13 +125,15 @@ object MergeOccsURI {
     var i = 1
     for (line <- Source.fromFile("E:/NamespacesData/output/pt/surfaceForms-fromTitRedDis.tsv").getLines()) {
       val lineArray = line.split('\t')
-      val newSF = relationHash.getOrElse(lineArray(0),"")
-      if (!newSF.isEmpty) {
-        if (newSF.length <= 50) {
-          sfStream.println(newSF.replaceAll("_","") + '\t' + lineArray(1))
+      if (!(lineArray(0).contains("noticia") && lineArray(0).contains("photo") && lineArray(0).contains("video") && lineArray(0).contains("Foto"))) {
+        val newSF = relationHash.getOrElse(lineArray(0),"")
+        if (!newSF.isEmpty) {
+          if (newSF.length <= 50) {
+            sfStream.println(newSF.replaceAll("_","") + '\t' + lineArray(1))
+          }
+        } else {
+          sfStream.println(line)
         }
-      } else {
-        sfStream.println(line)
       }
       if (i % 100000 == 0) println (i + " lines processed...")
       i += 1
